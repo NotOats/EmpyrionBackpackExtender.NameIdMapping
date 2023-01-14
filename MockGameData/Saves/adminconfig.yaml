@@ -1,0 +1,19 @@
+---
+# Admin Configuration
+
+# =========================================================
+# === PLEASE RENAME TO adminconfig.yaml TO BE EFFECTIVE ===
+# =========================================================
+
+# This file can contain two lists: one with elevated players with special permissions
+# and one with banned players.
+
+# 'Id' is a SteamID64 in both lists, lookup possible at https://steamid.io/
+# 'Permission' is 3 for 'GameMaster', 6 for 'Moderator' and 9 for 'Admin' - other values are not allowed.
+# 'Until' is the time when the ban ends.
+
+Elevated:
+- Id: 12345678912345678
+  Permission: 9
+- Id: 12341234123412341
+  Permission: 3

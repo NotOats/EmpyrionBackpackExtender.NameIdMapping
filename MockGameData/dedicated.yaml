@@ -1,0 +1,19 @@
+ServerConfig:
+  Srv_Port: 30000
+  Srv_Name: Test Server
+  Srv_MaxPlayers: 8
+  Srv_ReservePlayfields: 1
+  Srv_Public: false
+  AdminConfigFile: adminconfig.yaml
+  Tel_Port: 30004
+  SaveDirectory: Saves
+  MaxAllowedSizeClass: 10
+  AllowedBlueprints: All
+  HeartbeatServer: 15
+  TimeoutBootingPfServer: 90
+  DisableClientCheatProcessing: true
+GameConfig:
+  GameName: DediGame
+  Mode: Survival
+  Seed: 1011345
+  CustomScenario: Reforged Eden 1.9

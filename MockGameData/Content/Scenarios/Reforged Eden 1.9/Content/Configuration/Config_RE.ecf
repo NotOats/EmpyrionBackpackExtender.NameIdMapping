@@ -1,0 +1,26 @@
+
+VERSION: 9
+
+# FOR PLAYERS EXPERIENCED IN FILE EDITING ONLY. MAY CORRUPT SAVE GAME. USER IS RESPONSIBLE FOR KEEPING ALL FILES UP TO DATE.
+# THIS FILE IS FOR REFORGED EDEN.
+
+# This file can be used to easily increase the range of the warp drive when lowering the galaxy star count to prevent players from getting stuck.
+# Change below values as desired.
+# Save file as Config.ecf and place in the scenario's Content/Configuration folder.
+# THE CONFIG.ECF FILE IS NO LONGER SUPPORTED BY THE DEVELOPERS. IN THE FUTURE YOU MAY NEED TO MAKE CHANGES DIRECTLY TO THE BLOCKS CONFIG FILE.
+# NOTE: Any warp range over 100ly will allow players to warp to Progenitor space without opening the warp gate when using an advanced warp drive.
+
+
+
+{ Block Id: 720, Name: WarpDrive
+  #CostPerAU: 1, display: true                               # Pentaxid cost of warp per AU traveled within a solar system. Remove the # symbol in front of CostPerAU to enable.
+  #CostPerLY: 4, display: true                               # Pentaxid cost of warp per LY traveled between star systems. Remove the # symbol in front of CostPerLY to enable.
+  RangeLY: 30, display: true # Maximum warp range in LY. Set to whatever you want. Gets +1 range from each nav data turned in, up to +50.
+}
+
+
+{ Block Name: WarpDriveT2
+  #CostPerAU: 0.5, display: true                               # Pentaxid cost of warp per AU traveled within a solar system. Remove the # symbol in front of CostPerAU to enable.
+  #CostPerLY: 2, display: true                               # Pentaxid cost of warp per LY traveled between star systems. Remove the # symbol in front of CostPerLY to enable.
+  RangeLY: 60, display: true # Maximum warp range in LY. Set to whatever you want. Gets +1 range from each nav data turned in, up to +50.
+}
