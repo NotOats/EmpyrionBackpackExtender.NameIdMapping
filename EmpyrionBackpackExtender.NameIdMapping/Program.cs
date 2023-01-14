@@ -13,18 +13,19 @@ return app.Run(args);
 
 class GameSettings : CommandSettings
 {
-    [CommandArgument(0, "[server_folder]")]
+    [CommandOption("--folder")]
     [Description("The server's root folder (where 'BuildNumber.txt' is located)")]
     public string? ServerFolder { get; set; }
 
-    [CommandArgument(1, "[server_config]")]
-    [Description("The server's configuration file (typically dedicated.yaml)")]
+    [CommandOption("--config")]
+    [DefaultValue("dedicated.yaml")]
+    [Description("The server's configuration file.")]
     public string? ServerConfig { get; set; }
 
 
-    [CommandArgument(2, "[ecf_files]")]
-    [Description("A List of ecf files to read Item & Blocks from")]
-    public string[]? EcfFiles { get; set; }
+    [CommandOption("--ecf")]
+    [Description("A comma seperated string of ecf files to read Item & Blocks from")]
+    public string? EcfFiles { get; set; }
 
     public void PromptForMissing()
     {
@@ -33,11 +34,11 @@ class GameSettings : CommandSettings
         ServerConfig ??= AnsiConsole.Ask<string>("What is your server's [green]configuration file[/]?", "dedicated.yaml");
 
         // Pull available list for selection
-        if (EcfFiles == null || EcfFiles.Length == 0)
+        if (EcfFiles == null)
         {
             var save = new SaveGame(ServerFolder, ServerConfig);
             string[] options = save.ScenarioEcfFiles().Select(Path.GetFileName).Where(file => file != null).ToArray()!;
-            var defaults = new[] { "Config_RE.ecf", "BlocksConfig.ecf", "ItemsConfig.ecf" }.Where(options.Contains);
+            var defaults = new[] { "BlocksConfig.ecf", "ItemsConfig.ecf" }.Where(options.Contains);
 
             var files = AnsiConsole.Prompt(
                 new MultiSelectionPrompt<string>()
@@ -49,7 +50,7 @@ class GameSettings : CommandSettings
                     .AddChoices(options.Where(file => !defaults.Contains(file)))
                 );
 
-            EcfFiles = files.ToArray();
+            EcfFiles = string.Join(',', files);
         }
     }
 }
@@ -76,7 +77,8 @@ class DumpNameIdMappingFile : Command<GameSettings>
         var sw = Stopwatch.StartNew();
 
         // Do Map things
-        var map = save.CreateRealIdToNameMap(settings.EcfFiles!);
+        var ecfs = settings.EcfFiles!.Split(',');
+        var map = save.CreateRealIdToNameMap(ecfs);
         AnsiConsole.WriteLine($"Generated Real Id <-> Name map with {map.Count} entries");
 
         // Change to the correct dictionary found in GitHub-TC/EmpyrionScripting in ConfigEcfAccess.cs 
