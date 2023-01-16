@@ -31,7 +31,11 @@ class GameSettings : CommandSettings
     {
         ServerFolder ??= AnsiConsole.Ask<string>("What is your server's [green]root folder[/] (where 'BuildNumber.txt' is located)?");
 
-        ServerConfig ??= AnsiConsole.Ask<string>("What is your server's [green]configuration file[/]?", "dedicated.yaml");
+        // Read or Confirm defaults are good
+        if (ServerConfig == null || ServerConfig == "dedicated.yaml")
+        {
+            ServerConfig = AnsiConsole.Ask<string>("What is your server's [green]configuration file[/]?", "dedicated.yaml");
+        }
 
         // Pull available list for selection
         if (EcfFiles == null)
@@ -86,7 +90,7 @@ class DumpNameIdMappingFile : Command<GameSettings>
         //
         // public IReadOnlyDictionary<string, int> BlockIdMapping { get; set; }
 
-        var invertedMap = map.ToDictionary(x => x.Value, x => x.Key).OrderBy(kvp => kvp.Value);
+        var invertedMap = map.OrderBy(kvp => kvp.Value).ToDictionary(x => x.Value, x => x.Key) as IReadOnlyDictionary<string, int>;
 
         // Write to file
         using StreamWriter writer = File.CreateText("NameIdMapping.json");
