@@ -1,0 +1,79 @@
+{
+  "LogLevel": "Message",
+  "ChatCommandPrefix": "/\\",
+  "NameIdMappingFile": "filepath to the NameIdMapping.json e.g. from EmpyrionScripting for cross savegame support",
+  "MAX_STACK_SIZE": 16777214,
+  "PersonalBackpack": {
+    "ChatCommand": "vb",
+    "MaxBackpacks": 2,
+    "Price": 500000,
+    "OpenCooldownSecTimer": 60,
+    "AllowSuperstack": false,
+    "AllowedPlayfields": [],
+    "ForbiddenPlayfields": [],
+    "FilenamePattern": "Personal\\{0}.json",
+    "ForbiddenItems": [
+      {
+        "Id": 0,
+        "Count": 0,
+        "ItemName": null
+      }
+    ],
+    "AllowedItems": []
+  },
+  "FactionBackpack": {
+    "ChatCommand": "fb",
+    "MaxBackpacks": 2,
+    "Price": 1000000,
+    "OpenCooldownSecTimer": 600,
+    "AllowSuperstack": false,
+    "AllowedPlayfields": [],
+    "ForbiddenPlayfields": [],
+    "FilenamePattern": "Faction\\{0}.json",
+    "ForbiddenItems": [
+      {
+        "Id": 0,
+        "Count": 0,
+        "ItemName": null
+      }
+    ],
+    "AllowedItems": []
+  },
+  "OriginBackpack": {
+    "ChatCommand": "ob",
+    "MaxBackpacks": 1,
+    "Price": 0,
+    "OpenCooldownSecTimer": 1800,
+    "AllowSuperstack": false,
+    "AllowedPlayfields": [],
+    "ForbiddenPlayfields": [],
+    "FilenamePattern": "Origin\\{0}.json",
+    "ForbiddenItems": [
+      {
+        "Id": 0,
+        "Count": 0,
+        "ItemName": null
+      }
+    ],
+    "AllowedItems": []
+  },
+  "GlobalBackpack": {
+    "ChatCommand": "gb",
+    "MaxBackpacks": 1,
+    "Price": 0,
+    "OpenCooldownSecTimer": 1800,
+    "AllowSuperstack": false,
+    "AllowedPlayfields": [],
+    "ForbiddenPlayfields": [],
+    "FilenamePattern": "Global\\{0}.json",
+    "ForbiddenItems": [
+      {
+        "Id": 0,
+        "Count": 0,
+        "ItemName": null
+      }
+    ],
+    "AllowedItems": []
+  },
+  "OpendBackpacks": {}
+}
