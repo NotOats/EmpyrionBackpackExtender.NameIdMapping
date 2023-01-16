@@ -8,11 +8,13 @@ A NameIdMapping.json generator for [EmpyrionBackpackExtender](https://github.com
 ## Usage/Examples
 
 ```powershell
-# In PowerShell
+# In PowerShell with no user interaction
 .\EmpyrionBackpackExtender.NameIdMapping.exe `
->>  --folder "<Path_To_EGS_Server_Here>" `
->>  --config "dedicated.yaml" `
->>  --ecf "BlocksConfig.ecf,ItemsConfig.ecf"
+  --folder "D:\Development\EmpyrionBackpackExtender.NameIdMapping\MockGameData" `
+  --config "dedicated.yaml" `
+  --ecf "BlocksConfig.ecf,ItemsConfig.ecf" `
+  --save-local `
+  --save-server
 ```
 
 
