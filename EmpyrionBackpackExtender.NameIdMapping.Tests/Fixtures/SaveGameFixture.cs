@@ -10,7 +10,9 @@ public class SaveGameFixture
 
     public SaveGameFixture()
     {
-        SaveGame = new SaveGame(MockData.GameFilesDirectory, MockData.ServerConfigFile);
+        var fileSystemFixture = new MockFileSystemFixture();
+
+        SaveGame = new SaveGame(fileSystemFixture.FileSystem, MockData.GameFilesDirectory, MockData.ServerConfigFile);
         RealIdNameMap = SaveGame.CreateRealIdToNameMap(MockData.ItemAndBlockFiles);
     }
 }

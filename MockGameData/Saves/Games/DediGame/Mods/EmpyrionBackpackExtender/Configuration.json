@@ -1,7 +1,7 @@
 {
   "LogLevel": "Message",
   "ChatCommandPrefix": "/\\",
-  "NameIdMappingFile": "filepath to the NameIdMapping.json e.g. from EmpyrionScripting for cross savegame support",
+  "NameIdMappingFile": "NameIdMapping.json",
   "MAX_STACK_SIZE": 16777214,
   "PersonalBackpack": {
     "ChatCommand": "vb",

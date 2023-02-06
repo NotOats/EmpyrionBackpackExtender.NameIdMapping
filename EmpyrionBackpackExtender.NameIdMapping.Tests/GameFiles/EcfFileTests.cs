@@ -1,26 +1,32 @@
 ﻿using EmpyrionBackpackExtender.NameIdMapping.GameFiles;
+using EmpyrionBackpackExtender.NameIdMapping.Tests.Fixtures;
 using System.Diagnostics.CodeAnalysis;
-
+using System.IO.Abstractions;
 
 namespace EmpyrionBackpackExtender.NameIdMapping.Tests.GameFiles;
 
-public class EcfFileTest
+public class EcfFileTests : IClassFixture<MockFileSystemFixture>
 {
+    private readonly IFileSystem _fileSystem;
+
+    public EcfFileTests(MockFileSystemFixture fileSystemFixture) 
+        => _fileSystem = fileSystemFixture.FileSystem;
+
     // Theory Data
     public static TheoryData<EcfEntry> BlockData => new()
     {
-        new EcfEntry { Type = EcfEntryType.Block, Id = 380,  Name = "HullSmallBlocks" },
-        new EcfEntry { Type = EcfEntryType.Block, Id = 1478, Name = "PlasticSmallBlocks" },
-        new EcfEntry { Type = EcfEntryType.Block, Id = 1677, Name = "CargoContainerMedium" },
-        new EcfEntry { Type = EcfEntryType.Block, Id = 628,  Name = "CPUExtenderLargeT5" },
+        new EcfEntry(Type: EcfEntryType.Block, Id: 380,  Name: "HullSmallBlocks"),
+        new EcfEntry(Type: EcfEntryType.Block, Id: 1478, Name: "PlasticSmallBlocks" ),
+        new EcfEntry(Type: EcfEntryType.Block, Id: 1677, Name: "CargoContainerMedium" ),
+        new EcfEntry(Type: EcfEntryType.Block, Id: 628,  Name: "CPUExtenderLargeT5" ),
     };
 
     public static TheoryData<EcfEntry> ItemEntries => new()
     {
-        new EcfEntry { Type = EcfEntryType.Item, Id = 5,    Name = "Minigun" },
-        new EcfEntry { Type = EcfEntryType.Item, Id = 605,  Name = "ArmorHeavyEpic" },
-        new EcfEntry { Type = EcfEntryType.Item, Id = 1642, Name = "ZiraxTurretPlasmaChargeT2" },
-        new EcfEntry { Type = EcfEntryType.Item, Id = 3116, Name = "Eden_MinigunIncendiary" }
+        new EcfEntry(Type: EcfEntryType.Item, Id :5,    Name: "Minigun"),
+        new EcfEntry(Type: EcfEntryType.Item, Id :605,  Name: "ArmorHeavyEpic"),
+        new EcfEntry(Type: EcfEntryType.Item, Id :1642, Name: "ZiraxTurretPlasmaChargeT2"),
+        new EcfEntry(Type: EcfEntryType.Item, Id :3116, Name: "Eden_MinigunIncendiary")
     };
 
     // Tests
@@ -29,7 +35,7 @@ public class EcfFileTest
     public void TestBlockFile(EcfEntry entry)
     {
         var path = BuildEcfFilePath("BlocksConfig.ecf");
-        var ecfFile = new EcfFile(path);
+        var ecfFile = new EcfFile(_fileSystem, path);
 
         Assert.NotEmpty(ecfFile.Entries);
         Assert.Contains(entry, ecfFile.Entries, EcfEntryComparer.Instance);
@@ -40,7 +46,7 @@ public class EcfFileTest
     public void TestItemFile(EcfEntry entry)
     {
         var path = BuildEcfFilePath("ItemsConfig.ecf");
-        var ecfFile = new EcfFile(path);
+        var ecfFile = new EcfFile(_fileSystem, path);
 
         Assert.NotEmpty(ecfFile.Entries);
         Assert.Contains(entry, ecfFile.Entries, EcfEntryComparer.Instance);
@@ -57,7 +63,7 @@ public class EcfFileTest
             BuildEcfFilePath("ItemsConfig.ecf")
         };
 
-        var map = EcfFile.CreateRealIdNameMap(paths);
+        var map = EcfFile.CreateRealIdNameMap(_fileSystem, paths);
 
         Assert.NotEmpty(map);
         Assert.Contains(entry.RealId, map);

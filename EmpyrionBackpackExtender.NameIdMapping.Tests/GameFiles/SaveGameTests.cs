@@ -1,18 +1,14 @@
 ﻿using EmpyrionBackpackExtender.NameIdMapping.GameFiles;
 using EmpyrionBackpackExtender.NameIdMapping.Tests.Fixtures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EmpyrionBackpackExtender.NameIdMapping.Tests.GameFiles;
 
-public class SaveGameTest : IClassFixture<SaveGameFixture>
+public class SaveGameTests : IClassFixture<SaveGameFixture>
 {
     private SaveGameFixture Fixture { get; }
 
-    public SaveGameTest(SaveGameFixture fixture) => Fixture = fixture;
+    public SaveGameTests(SaveGameFixture fixture) 
+        => Fixture = fixture;
 
     [Fact]
     public void TestGameDirectories()
@@ -41,8 +37,8 @@ public class SaveGameTest : IClassFixture<SaveGameFixture>
 
     // TODO: Extract theory data into it's own class/file
     [Theory]
-    [MemberData(nameof(EcfFileTest.BlockData), MemberType = typeof(EcfFileTest))]
-    [MemberData(nameof(EcfFileTest.ItemEntries), MemberType = typeof(EcfFileTest))]
+    [MemberData(nameof(EcfFileTests.BlockData), MemberType = typeof(EcfFileTests))]
+    [MemberData(nameof(EcfFileTests.ItemEntries), MemberType = typeof(EcfFileTests))]
     public void TestRealIdNameMap(EcfEntry entry)
     {
         var map = Fixture.RealIdNameMap;
