@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.IO.Abstractions;
+using System.Runtime.CompilerServices;
 using YamlDotNet.Serialization;
 
 [assembly: InternalsVisibleTo("EmpyrionBackpackExtender.NameIdMapping.Tests")]
@@ -56,23 +57,25 @@ internal class ServerConfigFile
     /// <summary>
     /// Reads a server's dedicated config file, typically located at "<SERVER_ROOT>\dedicated.yaml"
     /// </summary>
+    /// <param name="fileSystem"></param>
     /// <param name="file">The config file to load</param>
     /// <returns></returns>
-    public static ServerConfigFile Load(string file)
+    /// <exception cref="FileNotFoundException"></exception>
+    public static ServerConfigFile Load(IFileSystem fileSystem, string file)
     {
-        if (!File.Exists(file))
-            return null;
+        if (!fileSystem.File.Exists(file))
+            throw new FileNotFoundException("Failed to parse server config file", file);
 
         var deserializer = new DeserializerBuilder()
             .IgnoreUnmatchedProperties()
             .Build();
 
-        using (var reader = new StreamReader(file))
-        {
-            var builder = deserializer.Deserialize<ServerConfigFileBuilder>(reader);
+        using var stream = fileSystem.File.OpenRead(file);
+        using var reader = new StreamReader(stream);
 
-            return builder.Build();
-        }
+        var builder = deserializer.Deserialize<ServerConfigFileBuilder>(reader);
+
+        return builder.Build();
     }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

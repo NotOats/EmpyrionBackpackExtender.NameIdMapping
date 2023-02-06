@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.IO.Abstractions;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 [assembly: InternalsVisibleTo("EmpyrionBackpackExtender.NameIdMapping.Tests")]
@@ -6,6 +7,8 @@ namespace EmpyrionBackpackExtender.NameIdMapping.GameFiles;
 
 internal class SaveGame
 {
+    private readonly IFileSystem _fileSystem;
+
     //
     // Game directories
     //
@@ -17,17 +20,18 @@ internal class SaveGame
     /// <summary>
     /// The server's content directory, typically "<ServerDirectory>\Content"
     /// </summary>
-    public string ContentDirectory { get; }
+    public string ContentDirectory => _fileSystem.Path.Combine(ServerDirectory, "Content");
 
     /// <summary>
     /// The server's save game directory, typically "<ServerDirectory>\Saves\Games\<GameName>"
     /// </summary>
-    public string SaveGameDirectory { get; }
+    public string SaveGameDirectory => _fileSystem.Path.Combine(ServerDirectory, ServerConfig.SaveDirectory, "Games", ServerConfig.GameName);
 
     /// <summary>
     /// The server's scenario content directory, typically "<ServerDirectory>\Content\Scenarios\<CustomScenario>\Content"
     /// </summary>
-    public string? ScenarioContentDirectory { get; }
+    public string? ScenarioContentDirectory => !string.IsNullOrWhiteSpace(ServerConfig.CustomScenario)
+            ? _fileSystem.Path.Combine(ContentDirectory, "Scenarios", ServerConfig.CustomScenario, "Content") : null;
 
     //
     // Game configuration info
@@ -38,27 +42,22 @@ internal class SaveGame
     public ServerConfigFile ServerConfig { get; }
 
 
-    public SaveGame(string serverDirectory, string dedicatedConfigFileName)
+    public SaveGame(IFileSystem fileSystem, string serverDirectory, string dedicatedConfigFileName)
     {
+        _fileSystem = fileSystem;
         ServerDirectory = serverDirectory;
 
         // Load server config
-        var configFile = Path.Combine(ServerDirectory, dedicatedConfigFileName);
-        if (!File.Exists(configFile))
+        var configFile = _fileSystem.Path.Combine(ServerDirectory, dedicatedConfigFileName);
+        if (!_fileSystem.File.Exists(configFile))
             throw new FileNotFoundException("Failed to load server config file", configFile);
 
-        ServerConfig = ServerConfigFile.Load(configFile);
-
-        // Calculate folder paths
-        ContentDirectory = Path.Combine(ServerDirectory, "Content");
-        SaveGameDirectory = Path.Combine(ServerDirectory, ServerConfig.SaveDirectory, "Games", ServerConfig.GameName);
-        ScenarioContentDirectory = string.IsNullOrWhiteSpace(ServerConfig.CustomScenario)
-            ? null : Path.Combine(ContentDirectory, "Scenarios", ServerConfig.CustomScenario, "Content");
+        ServerConfig = ServerConfigFile.Load(_fileSystem, configFile);
     }
 
     public IReadOnlyDictionary<int, string> CreateRealIdToNameMap(IEnumerable<string> ecfItemAndBlockFiles)
     {
-        var ecfFiles = ecfItemAndBlockFiles.Select(file => ReadEcfFile(file)).ToList();
+        var ecfFiles = ReadEcfFiles(ecfItemAndBlockFiles);
         return ItemMapFromEcfFiles(ecfFiles)
             .Union(ReadBlockMapping())
             .ToDictionary(x => x.Key, x => x.Value);
@@ -67,30 +66,28 @@ internal class SaveGame
     public IReadOnlyList<string> ScenarioEcfFiles()
     {
         var contentDirectory = ScenarioContentDirectory ?? ContentDirectory;
-        var ecfDirectory = Path.Combine(contentDirectory, "Configuration");
+        var ecfDirectory = _fileSystem.Path.Combine(contentDirectory, "Configuration");
 
-        return Directory.GetFiles(ecfDirectory, "*.ecf");
+        return _fileSystem.Directory.GetFiles(ecfDirectory, "*.ecf");
     }
 
-    /// <summary>
-    /// Reads an ecf file, trying the active scenario first or defaulting to the stock file
-    /// </summary>
-    /// <param name="fileName"></param>
-    /// <returns></returns>
-    private EcfFile ReadEcfFile(string fileName)
+    private IEnumerable<EcfFile> ReadEcfFiles(IEnumerable<string> files)
     {
-        if (ScenarioContentDirectory != null)
+        string FindFullPath(string file)
         {
-            var scenarioFile = Path.Combine(ScenarioContentDirectory, "Configuration", fileName);
+            if (ScenarioContentDirectory != null)
+                return _fileSystem.Path.Combine(ScenarioContentDirectory, "Configuration", file);
 
-            if (File.Exists(scenarioFile))
-            {
-                return new EcfFile(scenarioFile);
-            }
+            return _fileSystem.Path.Combine(ContentDirectory, "Configuration", file);
         }
 
-        var stockFile = Path.Combine(ContentDirectory, "Configuration", fileName);
-        return new EcfFile(stockFile);
+        foreach(var file in files.Select(FindFullPath))
+        {
+            if (!_fileSystem.File.Exists(file))
+                continue;
+
+            yield return new EcfFile(_fileSystem, file);
+        }
     }
 
     /// <summary>
@@ -115,12 +112,12 @@ internal class SaveGame
 
     private IEnumerable<KeyValuePair<int, string>> ReadBlockMapping()
     {
-        var file = Path.Combine(SaveGameDirectory, "blocksmap.dat");
+        var file = _fileSystem.Path.Combine(SaveGameDirectory, "blocksmap.dat");
 
-        if (!File.Exists(file))
+        if (!_fileSystem.File.Exists(file))
             yield break;
 
-        using var stream = File.Open(file, FileMode.Open);
+        using var stream = _fileSystem.File.Open(file, FileMode.Open);
         using var reader = new BinaryReader(stream);
         reader.BaseStream.Seek(9, SeekOrigin.Begin);
 
