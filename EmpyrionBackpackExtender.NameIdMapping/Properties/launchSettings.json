@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Create-Map": {
+      "commandName": "Project",
+      "commandLineArgs": "create-map"
+    },
+    "No Command": {
+      "commandName": "Project"
+    }
+  }
+}

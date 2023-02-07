@@ -87,7 +87,7 @@ public class Program
             if (type == null)
                 return null;
 
-            return _provider.GetRequiredService(type);
+            return _provider.GetService(type);
         }
     }
 }
