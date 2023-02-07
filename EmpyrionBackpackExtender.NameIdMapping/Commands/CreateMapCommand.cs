@@ -9,7 +9,7 @@ using EmpyrionBackpackExtender.NameIdMapping.BackpackExtender;
 
 namespace EmpyrionBackpackExtender.NameIdMapping.Commands;
 
-internal class CreateMappingSettings : GameSettings
+internal class CreateMapSettings : GameSettings
 {
     [CommandOption("--save-local")]
     [DefaultValue(true)]
@@ -26,18 +26,20 @@ internal class CreateMappingSettings : GameSettings
     public bool ForceConfigUpdate { get; set; }
 }
 
-internal class CreateMapCommand : AsyncCommand<CreateMappingSettings>
+internal class CreateMapCommand : AsyncCommand<CreateMapSettings>
 {
+    private readonly IAnsiConsole _console;
     private readonly IFileSystem _fileSystem;
 
-    public CreateMapCommand(IFileSystem fileSystem)
+    public CreateMapCommand(IAnsiConsole console, IFileSystem fileSystem)
     {
+        _console = console ?? throw new ArgumentNullException(nameof(console));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
     }
 
-    public override Task<int> ExecuteAsync([NotNull] CommandContext context, [NotNull] CreateMappingSettings settings)
+    public override Task<int> ExecuteAsync([NotNull] CommandContext context, [NotNull] CreateMapSettings settings)
     {
-        settings.PromptForMissing(_fileSystem);
+        settings.PromptForMissing(_console, _fileSystem);
 
         // Load game files & generate id/name map
         SaveGame save;
@@ -48,18 +50,18 @@ internal class CreateMapCommand : AsyncCommand<CreateMappingSettings>
         }
         catch(FileNotFoundException ex)
         {
-            AnsiConsole.MarkupLine($"[red]ERROR[/]: Config file does not exist at {ex.FileName}");
+            _console.MarkupLine($"[red]ERROR[/]: Config file does not exist at {ex.FileName}");
             return Task.FromResult(2); // ERROR_FILE_NOT_FOUND
         }
 
         var map = CreateNameIdMap(save, settings.EcfFiles!.Split(','));
-        AnsiConsole.WriteLine($"Generated Real Id <-> Name map with {map.Count} entries");
+        _console.WriteLine($"Generated Real Id <-> Name map with {map.Count} entries");
 
         // Save a local copy
         if (settings.SaveLocal)
         {
             WriteNameIdMapFile(map, "NameIdMapping.json");
-            AnsiConsole.WriteLine("NameIdMapping.json saved to current directory.");
+            _console.WriteLine("NameIdMapping.json saved to current directory.");
         }
 
         // Check if file should be installed to the server
@@ -68,7 +70,7 @@ internal class CreateMapCommand : AsyncCommand<CreateMappingSettings>
             return Task.FromResult(0);
 
         if(!settings.SaveServer.HasValue 
-            && !AnsiConsole.Confirm("Install mapping file in server's EmpyrionBackpackExtender configuration?"))
+            && !_console.Confirm("Install mapping file in server's EmpyrionBackpackExtender configuration?"))
             return Task.FromResult(0);
 
         // Save & Configure server copy
@@ -82,7 +84,7 @@ internal class CreateMapCommand : AsyncCommand<CreateMappingSettings>
         }
         catch(FileNotFoundException ex)
         {
-            AnsiConsole.MarkupLine($"[red]ERROR[/]: Config file does not exist at {ex.FileName}");
+            _console.MarkupLine($"[red]ERROR[/]: Config file does not exist at {ex.FileName}");
             return Task.FromResult(2); // ERROR_FILE_NOT_FOUND
         }
 
@@ -90,13 +92,13 @@ internal class CreateMapCommand : AsyncCommand<CreateMappingSettings>
 
         if (!settings.ForceConfigUpdate
             && config.NameIdMappingFile != config.NameIdMappingFileDefault
-            && !AnsiConsole.Confirm("Overwrite existing entry?"))
+            && !_console.Confirm("Overwrite existing entry?"))
             return Task.FromResult(0);
 
         config.NameIdMappingFile = serverMapFile;
         config.Save();
 
-        AnsiConsole.WriteLine("EmpyrionBackpackExtender configuration updated.");
+        _console.WriteLine("EmpyrionBackpackExtender configuration updated.");
 
         return Task.FromResult(0);
     }
@@ -111,7 +113,7 @@ internal class CreateMapCommand : AsyncCommand<CreateMappingSettings>
         grid.AddRow(new Text("Game Name"), new Text(save.ServerConfig.GameName));
         grid.AddRow(new Text("Scenario"), new Text(save.ServerConfig.CustomScenario));
 
-        AnsiConsole.Write(new Panel(grid).Header("Server Information").Expand());
+        _console.Write(new Panel(grid).Header("Server Information").Expand());
     }
 
     private void DisplayBackpackConfigInfo(BackpackConfig config, string newMapFile)
@@ -126,7 +128,7 @@ internal class CreateMapCommand : AsyncCommand<CreateMappingSettings>
             ? new Text(config.NameIdMappingFile) : new TextPath(config.NameIdMappingFile));
         grid.AddRow(new Text("New NameIdMappingFile"), new TextPath(newMapFile));
 
-        AnsiConsole.Write(new Panel(grid).Header("Backpack Configuration").Expand());
+        _console.Write(new Panel(grid).Header("Backpack Configuration").Expand());
     }
 
     private IReadOnlyDictionary<string, int> CreateNameIdMap([NotNull] SaveGame save, [NotNull] IEnumerable<string> ecfFiles)

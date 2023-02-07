@@ -20,11 +20,10 @@ internal class GameSettings : CommandSettings
     [Description("A comma seperated string of ecf files to read Item & Blocks from")]
     public string? EcfFiles { get; set; }
 
-    public void PromptForMissing(IFileSystem fileSystem)
+    public void PromptForMissing(IAnsiConsole console, IFileSystem fileSystem)
     {
-        ServerFolder ??= AnsiConsole.Ask<string>("What is your server's [green]root folder[/] (where 'BuildNumber.txt' is located)?");
-
-        ServerConfig ??= AnsiConsole.Ask<string>("What is your server's [green]configuration file[/]?", "dedicated.yaml");
+        ServerFolder ??= Ask(console, "What is your server's [green]root folder[/] (where 'BuildNumber.txt' is located)?");
+        ServerConfig ??= Ask(console, "What is your server's [green]configuration file[/]?", "dedicated.yaml");
 
         // Pull available list for selection
         if (EcfFiles == null)
@@ -33,7 +32,7 @@ internal class GameSettings : CommandSettings
             string[] options = save.ScenarioEcfFiles().Select(Path.GetFileName).Where(file => file != null).ToArray()!;
             var defaults = new[] { "BlocksConfig.ecf", "ItemsConfig.ecf" }.Where(options.Contains);
 
-            var files = AnsiConsole.Prompt(
+            var files = console.Prompt(
                 new MultiSelectionPrompt<string>()
                     .PageSize(10)
                     .Title("Which ECF Files should should I use?")
@@ -45,5 +44,17 @@ internal class GameSettings : CommandSettings
 
             EcfFiles = string.Join(',', files);
         }
+    }
+
+    private static string Ask(IAnsiConsole console, string prompt)
+    {
+        return console.Ask<string>(prompt);
+    }
+
+    private static string Ask(IAnsiConsole console, string prompt, string defaultValue)
+    {
+        return new TextPrompt<string>(prompt)
+            .DefaultValue(defaultValue)
+            .Show(console);
     }
 }

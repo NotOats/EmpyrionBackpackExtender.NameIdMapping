@@ -7,10 +7,10 @@ namespace EmpyrionBackpackExtender.NameIdMapping.Tests.GameFiles;
 
 public class EcfFileTests : IClassFixture<MockFileSystemFixture>
 {
-    private readonly MockFileSystemFixture _fileSystemFixture;
+    private readonly IFileSystem _fileSystem;
 
     public EcfFileTests(MockFileSystemFixture fileSystemFixture) 
-        => _fileSystemFixture = fileSystemFixture;
+        => _fileSystem = fileSystemFixture.NewFileSystem();
 
     // Theory Data
     public static TheoryData<EcfEntry> BlockData => new()
@@ -34,9 +34,8 @@ public class EcfFileTests : IClassFixture<MockFileSystemFixture>
     [MemberData(nameof(BlockData))]
     public void TestBlockFile(EcfEntry entry)
     {
-        var fileSystem = _fileSystemFixture.NewFileSystem();
         var path = BuildEcfFilePath("BlocksConfig.ecf");
-        var ecfFile = new EcfFile(fileSystem, path);
+        var ecfFile = new EcfFile(_fileSystem, path);
 
         Assert.NotEmpty(ecfFile.Entries);
         Assert.Contains(entry, ecfFile.Entries, EcfEntryComparer.Instance);
@@ -46,9 +45,8 @@ public class EcfFileTests : IClassFixture<MockFileSystemFixture>
     [MemberData(nameof(ItemEntries))]
     public void TestItemFile(EcfEntry entry)
     {
-        var fileSystem = _fileSystemFixture.NewFileSystem();
         var path = BuildEcfFilePath("ItemsConfig.ecf");
-        var ecfFile = new EcfFile(fileSystem, path);
+        var ecfFile = new EcfFile(_fileSystem, path);
 
         Assert.NotEmpty(ecfFile.Entries);
         Assert.Contains(entry, ecfFile.Entries, EcfEntryComparer.Instance);
@@ -59,14 +57,13 @@ public class EcfFileTests : IClassFixture<MockFileSystemFixture>
     [MemberData(nameof(ItemEntries))]
     public void TestRealIdNameMap(EcfEntry entry)
     {
-        var fileSystem = _fileSystemFixture.NewFileSystem();
         var paths = new[]
         {
             BuildEcfFilePath("BlocksConfig.ecf"),
             BuildEcfFilePath("ItemsConfig.ecf")
         };
 
-        var map = EcfFile.CreateRealIdNameMap(fileSystem, paths);
+        var map = EcfFile.CreateRealIdNameMap(_fileSystem, paths);
 
         Assert.NotEmpty(map);
         Assert.Contains(entry.RealId, map);

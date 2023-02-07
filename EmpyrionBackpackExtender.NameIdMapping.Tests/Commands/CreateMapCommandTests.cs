@@ -3,6 +3,7 @@ using EmpyrionBackpackExtender.NameIdMapping.Tests.Fixtures;
 using Moq;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using Spectre.Console.Testing;
 using System.IO.Abstractions;
 
 
@@ -10,134 +11,118 @@ namespace EmpyrionBackpackExtender.NameIdMapping.Tests.Commands;
 
 public class CreateMapCommandTests : IClassFixture<MockFileSystemFixture>
 {
-    private readonly IRemainingArguments _remainingArgs = new Mock<IRemainingArguments>().Object;
-    private readonly MockFileSystemFixture _fileSystemFixture;
+    private readonly IFileSystem _fileSystem;
+    private readonly TestConsole _console;
+    private readonly CreateMapCommand _command;
+    private readonly CommandContext _context;
+    private readonly CreateMapSettings _settings;
 
-    private static CreateMappingSettings DefaultSettings => new()
+    public CreateMapCommandTests(MockFileSystemFixture fileSystemFixture)
     {
-        ServerFolder = MockData.GameFilesDirectory,
-        ServerConfig = MockData.ServerConfigFile,
-        EcfFiles = string.Join(",", MockData.ItemAndBlockFiles),
-        SaveLocal = false,
-        SaveServer = null,
-        ForceConfigUpdate = false
-    };
+        _fileSystem = fileSystemFixture.NewFileSystem();
 
-    public CreateMapCommandTests(MockFileSystemFixture fileSystemFixture) 
-        => _fileSystemFixture = fileSystemFixture;
+        _console = new TestConsole()
+            .Colors(ColorSystem.Standard)
+            .EmitAnsiSequences();
+
+        _command = new CreateMapCommand(_console, _fileSystem);
+        _context = new CommandContext(new Mock<IRemainingArguments>().Object, "create-map", null);
+        _settings = new CreateMapSettings
+        {
+            ServerFolder = MockData.GameFilesDirectory,
+            ServerConfig = MockData.ServerConfigFile,
+            EcfFiles = string.Join(",", MockData.ItemAndBlockFiles),
+            SaveLocal = false,
+            SaveServer = null,
+            ForceConfigUpdate = false
+        };
+    }
 
     [Fact]
     public async void Test_CreateMapFull_Auto()
     {
-        var fileSystem = _fileSystemFixture.NewFileSystem();
-        var command = new CreateMapCommand(fileSystem);
-        var context = new CommandContext(_remainingArgs, "create-map", null);
-        var settings = DefaultSettings;
-        settings.SaveLocal = true;
-        settings.SaveServer = true;
-        settings.ForceConfigUpdate = true;
-        AnsiConsole.Record();
+        _settings.SaveLocal = true;
+        _settings.SaveServer = true;
+        _settings.ForceConfigUpdate = true;
 
-        var result = await command.ExecuteAsync(context, settings);
+        var result = await _command.ExecuteAsync(_context, _settings);
         Assert.Equal(0, result);
 
-        var output = AnsiConsole.ExportText();
+        var output = _console.Output;
         Assert.Contains("NameIdMapping.json saved to current directory.", output);
         Assert.Contains("EmpyrionBackpackExtender configuration updated.", output);
 
-        FileAssert.Exists(fileSystem, "NameIdMapping.json");
-        FileAssert.Contains(fileSystem, "NameIdMapping.json", "HullSmallBlocks");
-        FileAssert.Contains(fileSystem, "NameIdMapping.json", "Minigun");
+        FileAssert.Exists(_fileSystem, "NameIdMapping.json");
+        FileAssert.Contains(_fileSystem, "NameIdMapping.json", "HullSmallBlocks");
+        FileAssert.Contains(_fileSystem, "NameIdMapping.json", "Minigun");
 
-        var serverFile = fileSystem.Path.Combine(MockData.SaveGameDirectory, @"Mods\EmpyrionBackpackExtender\NameIdMapping.json");
-        FileAssert.Exists(fileSystem, serverFile);
-        FileAssert.Contains(fileSystem, serverFile, "HullSmallBlocks");
-        FileAssert.Contains(fileSystem, serverFile, "Minigun");
+        var serverFile = _fileSystem.Path.Combine(MockData.SaveGameDirectory, @"Mods\EmpyrionBackpackExtender\NameIdMapping.json");
+        FileAssert.Exists(_fileSystem, serverFile);
+        FileAssert.Contains(_fileSystem, serverFile, "HullSmallBlocks");
+        FileAssert.Contains(_fileSystem, serverFile, "Minigun");
     }
 
     [Fact]
     public async void Test_CreateMapLocal_Auto()
     {
-        var fileSystem = _fileSystemFixture.NewFileSystem();
-        var command = new CreateMapCommand(fileSystem);
-        var context = new CommandContext(_remainingArgs, "create-map", null);
-        var settings = DefaultSettings;
-        settings.SaveLocal = true;
-        settings.SaveServer = false;
-        AnsiConsole.Record();
+        _settings.SaveLocal = true;
+        _settings.SaveServer = false;
 
-        var result = await command.ExecuteAsync(context, settings);
+        var result = await _command.ExecuteAsync(_context, _settings);
         Assert.Equal(0, result);
 
-        Assert.Contains("NameIdMapping.json saved to current directory.", AnsiConsole.ExportText());
+        Assert.Contains("NameIdMapping.json saved to current directory.", _console.Output);
 
-        FileAssert.Exists(fileSystem, "NameIdMapping.json");
-        FileAssert.Contains(fileSystem, "NameIdMapping.json", "HullSmallBlocks");
-        FileAssert.Contains(fileSystem, "NameIdMapping.json", "Minigun");
+        FileAssert.Exists(_fileSystem, "NameIdMapping.json");
+        FileAssert.Contains(_fileSystem, "NameIdMapping.json", "HullSmallBlocks");
+        FileAssert.Contains(_fileSystem, "NameIdMapping.json", "Minigun");
     }
 
     [Fact]
     public async void Test_CreateMapServer_Auto()
     {
-        var fileSystem = _fileSystemFixture.NewFileSystem();
-        var command = new CreateMapCommand(fileSystem);
-        var context = new CommandContext(_remainingArgs, "create-map", null);
-        var settings = DefaultSettings;
-        settings.SaveServer = true;
-        settings.ForceConfigUpdate = true;
-        AnsiConsole.Record();
+        _settings.SaveServer = true;
+        _settings.ForceConfigUpdate = true;
 
-        var result = await command.ExecuteAsync(context, settings);
+        var result = await _command.ExecuteAsync(_context, _settings);
         Assert.Equal(0, result);
 
-        Assert.Contains("EmpyrionBackpackExtender configuration updated.", AnsiConsole.ExportText());
+        Assert.Contains("EmpyrionBackpackExtender configuration updated.", _console.Output);
 
-        var serverFile = fileSystem.Path.Combine(MockData.SaveGameDirectory, @"Mods\EmpyrionBackpackExtender\NameIdMapping.json");
-        FileAssert.Exists(fileSystem, serverFile);
-        FileAssert.Contains(fileSystem, serverFile, "HullSmallBlocks");
-        FileAssert.Contains(fileSystem, serverFile, "Minigun");
+        var serverFile = _fileSystem.Path.Combine(MockData.SaveGameDirectory, @"Mods\EmpyrionBackpackExtender\NameIdMapping.json");
+        FileAssert.Exists(_fileSystem, serverFile);
+        FileAssert.Contains(_fileSystem, serverFile, "HullSmallBlocks");
+        FileAssert.Contains(_fileSystem, serverFile, "Minigun");
     }
 
     [Fact]
     public async void Test_SaveGameNotFound()
     {
-        var fileSystem = _fileSystemFixture.NewFileSystem();
+        _settings.SaveServer = true;
+        _settings.ForceConfigUpdate = true;
 
-        var configFile = fileSystem.Path.Combine(DefaultSettings.ServerFolder!, DefaultSettings.ServerConfig!);
-        fileSystem.File.Delete(configFile);
+        var configFile = _fileSystem.Path.Combine(_settings.ServerFolder!, _settings.ServerConfig!);
+        _fileSystem.File.Delete(configFile);
 
-        var command = new CreateMapCommand(fileSystem);
-        var context = new CommandContext(_remainingArgs, "create-map", null);
-        var settings = DefaultSettings;
-        settings.SaveServer = true;
-        settings.ForceConfigUpdate = true;
-        AnsiConsole.Record();
-
-        var result = await command.ExecuteAsync(context, settings);
+        var result = await _command.ExecuteAsync(_context, _settings);
         Assert.Equal(2, result);
 
-        Assert.Contains("Config file does not exist at", AnsiConsole.ExportText());
+        Assert.Contains("Config file does not exist at", _console.Output);
     }
 
     [Fact]
     public async void Test_BackpackConfigNotFound()
     {
-        var fileSystem = _fileSystemFixture.NewFileSystem();
+        _settings.SaveServer = true;
+        _settings.ForceConfigUpdate = true;
 
-        var configFile = fileSystem.Path.Combine(MockData.SaveGameDirectory, @"Mods\EmpyrionBackpackExtender\Configuration.json");
-        fileSystem.File.Delete(configFile);
+        var configFile = _fileSystem.Path.Combine(MockData.SaveGameDirectory, @"Mods\EmpyrionBackpackExtender\Configuration.json");
+        _fileSystem.File.Delete(configFile);
 
-        var command = new CreateMapCommand(fileSystem);
-        var context = new CommandContext(_remainingArgs, "create-map", null);
-        var settings = DefaultSettings;
-        settings.SaveServer = true;
-        settings.ForceConfigUpdate = true;
-        AnsiConsole.Record();
-
-        var result = await command.ExecuteAsync(context, settings);
+        var result = await _command.ExecuteAsync(_context, _settings);
         Assert.Equal(2, result);
 
-        var output = AnsiConsole.ExportText();
+        var output = _console.Output;
         Assert.Contains("Generated Real Id <-> Name map with", output);
         Assert.Contains("Config file does not exist at", output);
     }
