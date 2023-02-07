@@ -6,16 +6,17 @@ namespace EmpyrionBackpackExtender.NameIdMapping.Tests.GameFiles;
 
 public class ServerConfigFileTests : IClassFixture<MockFileSystemFixture>
 {
-    private readonly IFileSystem _fileSystem;
+    private readonly MockFileSystemFixture _fileSystemFixture;
 
     public ServerConfigFileTests(MockFileSystemFixture fileSystemFixture)
-        => _fileSystem = fileSystemFixture.FileSystem;
+        => _fileSystemFixture = fileSystemFixture;
 
     [Fact]
     public void TestLoadServerConfig()
     {
+        var fileSystem = _fileSystemFixture.NewFileSystem();
         var path = Path.Combine(MockData.GameFilesDirectory, MockData.ServerConfigFile);
-        var config = ServerConfigFile.Load(_fileSystem, path);
+        var config = ServerConfigFile.Load(fileSystem, path);
 
         Assert.NotNull(config);
         Assert.Equal(MockData.ServerName, config.ServerName);

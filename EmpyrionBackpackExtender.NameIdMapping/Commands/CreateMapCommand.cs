@@ -40,8 +40,17 @@ internal class CreateMapCommand : AsyncCommand<CreateMappingSettings>
         settings.PromptForMissing(_fileSystem);
 
         // Load game files & generate id/name map
-        var save = new SaveGame(_fileSystem, settings.ServerFolder!, settings.ServerConfig!);
-        DisplaySaveGameInfo(save);
+        SaveGame save;
+        try
+        {
+            save = new SaveGame(_fileSystem, settings.ServerFolder!, settings.ServerConfig!);
+            DisplaySaveGameInfo(save);
+        }
+        catch(FileNotFoundException ex)
+        {
+            AnsiConsole.MarkupLine($"[red]ERROR[/]: Config file does not exist at {ex.FileName}");
+            return Task.FromResult(2); // ERROR_FILE_NOT_FOUND
+        }
 
         var map = CreateNameIdMap(save, settings.EcfFiles!.Split(','));
         AnsiConsole.WriteLine($"Generated Real Id <-> Name map with {map.Count} entries");

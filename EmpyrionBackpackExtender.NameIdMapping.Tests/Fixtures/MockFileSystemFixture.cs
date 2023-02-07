@@ -10,15 +10,15 @@ namespace EmpyrionBackpackExtender.NameIdMapping.Tests.Fixtures
 {
     public class MockFileSystemFixture
     {
-        internal IFileSystem FileSystem { get; }
+        private readonly IDictionary<string, MockFileData> _files;
 
         public MockFileSystemFixture()
         {
-            var files = MockData.ReadMockGameFiles().ToDictionary(
+            _files = MockData.ReadMockGameFiles().ToDictionary(
                 kvp => kvp.Key, 
                 kvp => new MockFileData(kvp.Value));
-
-            FileSystem = new MockFileSystem(files);
         }
+
+        public IFileSystem NewFileSystem() => new MockFileSystem(_files);
     }
 }
