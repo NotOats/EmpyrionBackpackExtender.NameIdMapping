@@ -62,7 +62,7 @@ internal class BackpackConfig
     private JObject ReadFile()
     {
         if (!_fileSystem.File.Exists(ConfigFile))
-            throw new FileNotFoundException($"{ConfigFile} does not exist");
+            throw new FileNotFoundException("BackpackConfig file does not exist", ConfigFile);
 
         var contents = _fileSystem.File.ReadAllText(ConfigFile);
         return JObject.Parse(contents);

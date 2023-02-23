@@ -1,0 +1,237 @@
+{
+  "OpendBySteamId": null,
+  "OpendByName": null,
+  "LastUsed": 1,
+  "LastAccessPlayerName": "TestPlayerName",
+  "LastAccessFactionName": "Hum",
+  "Backpacks": [
+    {
+      "Items": [
+        {
+          "id": 0,
+          "name": "CockpitBlocksSV",
+          "count": 500,
+          "slotIdx": 0,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "ThrusterMSRound3x3Blocks",
+          "count": 250,
+          "slotIdx": 1,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "HoverEngineLarge",
+          "count": 1000,
+          "slotIdx": 2,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "CPUExtenderLargeT5",
+          "count": 999,
+          "slotIdx": 3,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "FuelTankSV",
+          "count": 2000,
+          "slotIdx": 4,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "ThrusterSVDirectional",
+          "count": 1000,
+          "slotIdx": 5,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "OxygenTankSmallMS",
+          "count": 1000,
+          "slotIdx": 6,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "AutoMiningDeviceT2",
+          "count": 500,
+          "slotIdx": 7,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "Eden_DrillTurretAutoCVT2",
+          "count": 500,
+          "slotIdx": 8,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "Eden_ModularPulseLaserSVGamma",
+          "count": 500,
+          "slotIdx": 9,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "TurretBaseArtilleryBlocks",
+          "count": 250,
+          "slotIdx": 10,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "Eden_TurretMissileLight",
+          "count": 500,
+          "slotIdx": 11,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "Eden_ModularPulseLaserSVGamma",
+          "count": 500,
+          "slotIdx": 12,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "MultitoolSV",
+          "count": 1000,
+          "slotIdx": 13,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "Egg",
+          "count": 1,
+          "slotIdx": 14,
+          "ammo": 0,
+          "decay": 4440
+        },
+        {
+          "id": 0,
+          "name": "DrillAttachmentT2",
+          "count": 500,
+          "slotIdx": 15,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "WeaponSV03",
+          "count": 500,
+          "slotIdx": 16,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "TurretPulsarAlien",
+          "count": 250,
+          "slotIdx": 17,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "TurretBaseProjectileBlocksT2",
+          "count": 500,
+          "slotIdx": 18,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "TurretGVArtilleryBlocks",
+          "count": 500,
+          "slotIdx": 19,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "CopperOre",
+          "count": 10,
+          "slotIdx": 20,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "Spice",
+          "count": 1,
+          "slotIdx": 21,
+          "ammo": 0,
+          "decay": 4578
+        },
+        {
+          "id": 0,
+          "name": "SiliconOre",
+          "count": 26,
+          "slotIdx": 22,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "IronOre",
+          "count": 58,
+          "slotIdx": 23,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "PowerBar",
+          "count": 5,
+          "slotIdx": 24,
+          "ammo": 0,
+          "decay": 4985
+        },
+        {
+          "id": 0,
+          "name": "Eden_DrillTurretAutoCVAlien",
+          "count": 250,
+          "slotIdx": 25,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "Eden_DrillTurretAutoCVT2",
+          "count": 250,
+          "slotIdx": 26,
+          "ammo": 0,
+          "decay": 0
+        },
+        {
+          "id": 0,
+          "name": "Eden_DrillTurretAutoCV",
+          "count": 250,
+          "slotIdx": 27,
+          "ammo": 0,
+          "decay": 0
+        }
+      ]
+    }
+  ]
+}
