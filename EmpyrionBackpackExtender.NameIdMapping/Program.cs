@@ -33,6 +33,12 @@ public class Program
         config.AddCommand<CreateMapCommand>("create-map")
             .WithDescription("Creates a NameIdMapping.json file");
 
+        config.AddCommand<ConvertToNameCommand>("convert-to-name")
+            .WithDescription("Converts items with only ids to names using a dedicated.yaml file and server folder.");
+
+        config.AddCommand<ConvertToNameFolderCommand>("convert-to-name-folder")
+            .WithDescription("Convers a folder of backpacks from id to name format using an Itemlist.csv from the EPF mod.");
+
         return config;
     }
 

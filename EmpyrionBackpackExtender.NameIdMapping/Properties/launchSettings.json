@@ -6,6 +6,10 @@
     },
     "No Command": {
       "commandName": "Project"
+    },
+    "Convert-To-Name-Folder": {
+      "commandName": "Project",
+      "commandLineArgs": "convert-to-name-folder"
     }
   }
 }

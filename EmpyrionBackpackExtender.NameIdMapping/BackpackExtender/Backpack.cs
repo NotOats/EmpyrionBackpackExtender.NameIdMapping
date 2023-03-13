@@ -41,6 +41,7 @@ internal class Backpack
 
         var count = 0;
         var dirty = BackpackData.Backpacks
+            .Where(backpack => backpack.Items != null && backpack.Items.Length > 0)
             .SelectMany(backpack => backpack.Items)
             .Where(item => string.IsNullOrEmpty(item.name));
 
